@@ -148,7 +148,7 @@ void writeDacValuesToFiles(FILE *fpLow, FILE *fpMid, FILE *fpHigh) {
 int main(int argc, char **argv) {
    FILE *fpLow;
    FILE *fpMid;
-   FILE *F_High;
+   FILE *fpHigh;
 
    if(createHeaderFile("idacValuesLow.h", lowHeaderText)) return 1;
    if(createHeaderFile("idacValuesMid.h", midHeaderText)) return 1;
@@ -167,19 +167,19 @@ int main(int argc, char **argv) {
       return 1;
    }
 
-   F_High = openCFileWithHeader("High");
-   if (F_High == NULL) {
+   fpHigh = openCFileWithHeader("High");
+   if (fpHigh == NULL) {
       puts("Error creating file for high idac values.");
       fclose(fpLow);
       fclose(fpMid);
       return 1;
    }
 
-   writeDacValuesToFiles(fpLow, fpMid, F_High);
+   writeDacValuesToFiles(fpLow, fpMid, fpHigh);
 
    fclose(fpLow);
    fclose(fpMid);
-   fclose(F_High);
+   fclose(fpHigh);
 
    return 0;
 }
