@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <stdint.h>
 
 /*
  * 12000000 is the counter clock divided by 2
@@ -18,12 +19,12 @@ uint32_t freqToPeriod(double f) {
    oldCalc = calc;
    bigVal = (uint64_t)calc;
    smallVal = (uint32_t)calc;
-   if (bigVal != smallVal) printf("\r\nIt looks like the number does not fit. %u %llu\r\n", smallVal, bigVal);
+   if (bigVal != smallVal) printf("\r\nIt looks like the number does not fit. %u %lu\r\n", smallVal, bigVal);
    return (1500000.0*32767.0)/f;
 }
 
 #define VOLTS_PER_OCTAVE (1.0)
-#define VCC (5)
+#define VCC (5.0)
 #define HALF_STEPS_PER_OCTAVE (12)
 #define HALF_STEPS_OVER_VCC (VCC * HALF_STEPS_PER_OCTAVE)
 #define ADC_COUNTS (4096)
@@ -36,14 +37,14 @@ int main (int argc, char **argv) {
    double fbase = 440 * pow(oneHalfTone, -53); // E0 (20.6 hz) is 53 half tones below A4 (440 hz)
    uint32_t period;
    double freq;
-   double fractionalTone = 1.0 * CV_INPUT_MAX * HALF_STEPS_OVER_VCC / VCC / (TABLE_SIZE - 1);
+   double fractionalTone = 1.0 * CV_INPUT_MAX * HALF_STEPS_OVER_VCC / VCC / ((float)TABLE_SIZE - 1.0);
 
    // move starting position down some number of octaves
    fbase = fbase * pow(oneHalfTone, -120);
 
    printf("Fractional tone: %f\r\n", fractionalTone);
    printf ("// Table starting frequency: %f\r\n", fbase);
-   printf("const uint32_t countToPeriodLookup[%d] = { \r\n   %uu,", TABLE_SIZE, freqToPeriod(fbase));
+   printf("const uint32_t countToPeriodLookup[%d] = { \r\n   %uu,", (uint32_t)TABLE_SIZE, freqToPeriod(fbase));
    for (i=1; i<TABLE_SIZE-1; i++) {
       //freq = fbase * pow(oneHalfTone, 60.0 * i / (ADC_COUNTS-1));
       freq = fbase * pow(oneHalfTone, i * fractionalTone);
